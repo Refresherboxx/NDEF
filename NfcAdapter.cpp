@@ -217,3 +217,9 @@ unsigned int NfcAdapter::guessTagType()
         return TAG_TYPE_2;
     }
 }
+
+void NfcAdapter::haltTag() {
+    byte command[] = {0x50, 0x00};
+    byte out_size = 0;
+    shield->inDataExchange(command, sizeof(command), nullptr, &out_size);
+}
