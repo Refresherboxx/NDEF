@@ -27,18 +27,30 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
     if (_typeLength)
     {
         _type = (byte*)malloc(_typeLength);
+        if(_type == nullptr) {
+            Serial.printf("OOM (%u)\n", _typeLength);
+            return;
+        }
         memcpy(_type, rhs._type, _typeLength);
     }
 
     if (_payloadLength)
     {
         _payload = (byte*)malloc(_payloadLength);
+        if(_payload == nullptr) {
+            Serial.printf("OOM (%u)\n", _payloadLength);
+            return;
+        }
         memcpy(_payload, rhs._payload, _payloadLength);
     }
 
     if (_idLength)
     {
         _id = (byte*)malloc(_idLength);
+        if(_id == nullptr) {
+            Serial.printf("OOM (%u)\n", _idLength);
+            return;
+        }
         memcpy(_id, rhs._id, _idLength);
     }
 
@@ -95,19 +107,28 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
         if (_typeLength)
         {
             _type = (byte*)malloc(_typeLength);
-            memcpy(_type, rhs._type, _typeLength);
+            if(_type != nullptr)
+                memcpy(_type, rhs._type, _typeLength);
+            else
+                Serial.printf("OOM %u\n", _typeLength);
         }
 
         if (_payloadLength)
         {
             _payload = (byte*)malloc(_payloadLength);
-            memcpy(_payload, rhs._payload, _payloadLength);
+            if(_payload != nullptr)
+                memcpy(_payload, rhs._payload, _payloadLength);
+            else
+                Serial.printf("OOM %u\n", _payloadLength);
         }
 
         if (_idLength)
         {
             _id = (byte*)malloc(_idLength);
-            memcpy(_id, rhs._id, _idLength);
+            if(_id != nullptr)
+                memcpy(_id, rhs._id, _idLength);
+            else
+                Serial.printf("OOM %u\n", _idLength);
         }
     }
     return *this;
@@ -252,9 +273,14 @@ void NdefRecord::setType(const byte * type, const unsigned int numBytes)
     if(_typeLength)
     {
         free(_type);
+        _typeLength = 0;
     }
 
     _type = (uint8_t*)malloc(numBytes);
+    if(_type == nullptr) {
+        Serial.printf("OOM (%u)\n", numBytes);
+        return;
+    }
     memcpy(_type, type, numBytes);
     _typeLength = numBytes;
 }
@@ -270,9 +296,14 @@ void NdefRecord::setPayload(const byte * payload, const int numBytes)
     if (_payloadLength)
     {
         free(_payload);
+        _payloadLength = 0;
     }
 
     _payload = (byte*)malloc(numBytes);
+    if(_payload == nullptr) {
+        Serial.printf("OOM (%u)\n", numBytes);
+        return;
+    }
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
 }
@@ -295,9 +326,14 @@ void NdefRecord::setId(const byte * id, const unsigned int numBytes)
     if (_idLength)
     {
         free(_id);
+        _idLength = 0;
     }
 
     _id = (byte*)malloc(numBytes);
+    if(_id == nullptr) {
+        Serial.printf("OOM (%u)\n", numBytes);
+        return;
+    }
     memcpy(_id, id, numBytes);
     _idLength = numBytes;
 }
