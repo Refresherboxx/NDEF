@@ -23,6 +23,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         // decode tnf - first byte is tnf with bit flags
         // see the NFDEF spec for more info
         byte tnf_byte = data[index];
+        index++;
         // bool mb = tnf_byte & 0x80;
         bool me = tnf_byte & 0x40;
         // bool cf = tnf_byte & 0x20;
@@ -33,14 +34,14 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         NdefRecord record = NdefRecord();
         record.setTnf(tnf);
 
-        index++;
         int typeLength = data[index];
+        index++;
 
         uint32_t payloadLength = 0;
         if (sr)
         {
-            index++;
             payloadLength = data[index];
+            index++;
         }
         else
         {
@@ -55,18 +56,19 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         int idLength = 0;
         if (il)
         {
-            index++;
             idLength = data[index];
+            index++;
         }
 
-        index++;
         record.setType(&data[index], typeLength);
         index += typeLength;
+        Serial.println(record.getType());
 
         if (il)
         {
             record.setId(&data[index], idLength);
             index += idLength;
+            Serial.println(record.getId());
         }
 
         record.setPayload(&data[index], payloadLength);
